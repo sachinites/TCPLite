@@ -7,12 +7,22 @@
 
 ## Quick Build & Run
 
-### 1. Build
+### 1. Setup iptables (IMPORTANT!)
+
+**You must do this first** to prevent kernel RST packets:
+
+```bash
+sudo ./setup_iptables.sh
+```
+
+This prevents the Linux kernel from interfering with your user-space TCP connections.
+
+### 2. Build
 ```bash
 make
 ```
 
-### 2. Run Server (Terminal 1)
+### 3. Run Server (Terminal 1)
 ```bash
 # Run on default (all interfaces, port 8080)
 sudo ./tcp_server
@@ -27,7 +37,7 @@ sudo ./tcp_server 127.0.0.1 8080
 sudo ./tcp_server 0.0.0.0 9000
 ```
 
-### 3. Run Client (Terminal 2)
+### 4. Run Client (Terminal 2)
 ```bash
 # Connect to localhost:8080 (default)
 sudo ./tcp_client

@@ -55,6 +55,48 @@ The library provides a familiar BSD socket-like interface:
 - Linux operating system
 - GCC compiler
 - Root privileges (required for RAW sockets)
+- iptables (for preventing kernel interference)
+
+## ⚠️ Important: iptables Setup
+
+**Before running TCP Lite, you must configure iptables** to prevent the Linux kernel from sending RST packets that interfere with your user-space TCP connections.
+
+### Quick Setup
+
+```bash
+# Run the automated setup script
+sudo ./setup_iptables.sh
+```
+
+### Why This Is Needed
+
+When you use RAW sockets for user-space TCP, the Linux kernel doesn't know about your connections. When the kernel receives TCP packets for ports it's not listening on, it automatically sends RST (reset) packets. These RST packets will kill your user-space TCP connections.
+
+**Without iptables setup, you will see:**
+- Connection establishment failures
+- RST packets in Wireshark/tcpdump
+- "Connection timeout" errors
+
+### Manual Setup (Alternative)
+
+```bash
+# Block RST packets for server ports (8080-9000)
+sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST --sport 8080:9000 -j DROP
+sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST --dport 8080:9000 -j DROP
+
+# Block RST packets for client ports (12345-12399)
+sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST --sport 12345:12399 -j DROP
+sudo iptables -A OUTPUT -p tcp --tcp-flags RST RST --dport 12345:12399 -j DROP
+```
+
+### Cleanup (When Done Testing)
+
+```bash
+# Run the cleanup script
+sudo ./cleanup_iptables.sh
+```
+
+For detailed troubleshooting, see `TROUBLESHOOTING.md`.
 
 ## Building
 

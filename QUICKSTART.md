@@ -14,12 +14,29 @@ make
 
 ### 2. Run Server (Terminal 1)
 ```bash
-sudo ./tcp_server 8080
+# Run on default (all interfaces, port 8080)
+sudo ./tcp_server
+
+# Run on specific port (all interfaces)
+sudo ./tcp_server 9000
+
+# Run on specific IP and port
+sudo ./tcp_server 127.0.0.1 8080
+
+# Listen on all interfaces, port 9000
+sudo ./tcp_server 0.0.0.0 9000
 ```
 
 ### 3. Run Client (Terminal 2)
 ```bash
-sudo ./tcp_client 127.0.0.1 8080
+# Connect to localhost:8080 (default)
+sudo ./tcp_client
+
+# Connect to specific server (default port 8080)
+sudo ./tcp_client 192.168.1.100
+
+# Connect to specific server and port
+sudo ./tcp_client 192.168.1.100 9000
 ```
 
 ## Using the Automated Test Script

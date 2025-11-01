@@ -6,19 +6,32 @@
 #include <unistd.h>
 
 int main(int argc, char *argv[]) {
+    char *bind_ip = "0.0.0.0";  // Default: listen on all interfaces
     int port = 8080;
     
-    if (argc > 1) {
+    // Parse command line arguments
+    if (argc == 2) {
+        // Only port specified
         port = atoi(argv[1]);
+    } else if (argc >= 3) {
+        // IP and port specified
+        bind_ip = argv[1];
+        port = atoi(argv[2]);
     }
     
     printf("=== TCP Lite Server ===\n");
+    printf("Bind Address: %s\n", bind_ip);
     printf("Port: %d\n\n", port);
     
     // Check if running as root
     if (geteuid() != 0) {
         fprintf(stderr, "Error: This program requires root privileges (raw sockets)\n");
-        fprintf(stderr, "Please run with: sudo %s [port]\n", argv[0]);
+        fprintf(stderr, "Usage: sudo %s [ip_address] [port]\n", argv[0]);
+        fprintf(stderr, "   or: sudo %s [port]\n", argv[0]);
+        fprintf(stderr, "Examples:\n");
+        fprintf(stderr, "  sudo %s 8080              # Listen on all interfaces, port 8080\n", argv[0]);
+        fprintf(stderr, "  sudo %s 127.0.0.1 8080    # Listen on localhost only, port 8080\n", argv[0]);
+        fprintf(stderr, "  sudo %s 0.0.0.0 9000      # Listen on all interfaces, port 9000\n", argv[0]);
         return 1;
     }
     
@@ -34,7 +47,14 @@ int main(int argc, char *argv[]) {
     struct sockaddr_in addr;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = INADDR_ANY;
+    
+    // Parse IP address
+    if (inet_pton(AF_INET, bind_ip, &addr.sin_addr) <= 0) {
+        fprintf(stderr, "Invalid IP address: %s\n", bind_ip);
+        tcp_close(sockfd);
+        return 1;
+    }
+    
     addr.sin_port = htons(port);
     
     if (tcp_bind(sockfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
@@ -42,7 +62,7 @@ int main(int argc, char *argv[]) {
         tcp_close(sockfd);
         return 1;
     }
-    printf("Socket bound to port %d\n", port);
+    printf("Socket bound to %s:%d\n", bind_ip, port);
     
     // Listen for connections
     if (tcp_listen(sockfd, 5) < 0) {

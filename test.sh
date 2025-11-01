@@ -37,8 +37,8 @@ echo "Press Ctrl+C to stop."
 echo ""
 
 # Start server in background
-echo "Starting server on port 8080..."
-./tcp_server 8080 > server.log 2>&1 &
+echo "Starting server on 127.0.0.1:8080..."
+./tcp_server 127.0.0.1 8080 > server.log 2>&1 &
 SERVER_PID=$!
 
 echo "Server started with PID: $SERVER_PID"
@@ -48,7 +48,7 @@ echo ""
 sleep 2
 
 # Run client
-echo "Starting client..."
+echo "Starting client connecting to 127.0.0.1:8080..."
 echo ""
 ./tcp_client 127.0.0.1 8080
 

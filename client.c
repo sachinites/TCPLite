@@ -9,10 +9,11 @@ int main(int argc, char *argv[]) {
     char *server_ip = "127.0.0.1";
     int server_port = 8080;
     
-    if (argc > 1) {
+    // Parse command line arguments
+    if (argc >= 2) {
         server_ip = argv[1];
     }
-    if (argc > 2) {
+    if (argc >= 3) {
         server_port = atoi(argv[2]);
     }
     
@@ -22,7 +23,11 @@ int main(int argc, char *argv[]) {
     // Check if running as root
     if (geteuid() != 0) {
         fprintf(stderr, "Error: This program requires root privileges (raw sockets)\n");
-        fprintf(stderr, "Please run with: sudo %s [server_ip] [port]\n", argv[0]);
+        fprintf(stderr, "Usage: sudo %s [server_ip] [port]\n", argv[0]);
+        fprintf(stderr, "Examples:\n");
+        fprintf(stderr, "  sudo %s                        # Connect to 127.0.0.1:8080 (default)\n", argv[0]);
+        fprintf(stderr, "  sudo %s 192.168.1.100          # Connect to 192.168.1.100:8080\n", argv[0]);
+        fprintf(stderr, "  sudo %s 192.168.1.100 9000     # Connect to 192.168.1.100:9000\n", argv[0]);
         return 1;
     }
     

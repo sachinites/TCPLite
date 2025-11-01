@@ -75,23 +75,36 @@ This will create two executables:
 
 ### Running the Server
 
-The server listens on a specified port (default 8080) and echoes back received messages.
+The server listens on a specified IP address and port, and echoes back received messages.
+
+**Syntax:** `sudo ./tcp_server [ip_address] [port]` or `sudo ./tcp_server [port]`
 
 ```bash
-# Run on default port 8080
+# Run on default (all interfaces 0.0.0.0, port 8080)
 sudo ./tcp_server
 
-# Run on custom port
+# Run on specific port (all interfaces)
 sudo ./tcp_server 9000
+
+# Run on specific IP and port
+sudo ./tcp_server 127.0.0.1 8080
+
+# Listen on all interfaces, port 9000
+sudo ./tcp_server 0.0.0.0 9000
 ```
 
 ### Running the Client
 
-The client connects to the server and sends test messages.
+The client connects to the specified server and sends test messages.
+
+**Syntax:** `sudo ./tcp_client [server_ip] [port]`
 
 ```bash
-# Connect to localhost:8080
+# Connect to localhost:8080 (default)
 sudo ./tcp_client
+
+# Connect to specific server (default port 8080)
+sudo ./tcp_client 192.168.1.100
 
 # Connect to specific server and port
 sudo ./tcp_client 192.168.1.100 9000
